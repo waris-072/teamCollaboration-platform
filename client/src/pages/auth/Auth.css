@@ -1,0 +1,308 @@
+/* ===== Auth Container ===== */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #f0f4ff 0%, #e8edf5 100%);
+  padding: 20px;
+}
+
+/* ===== Card ===== */
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(74, 144, 226, 0.12);
+  border: 1px solid rgba(74, 144, 226, 0.08);
+}
+
+/* ===== Title ===== */
+
+.auth-title {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #5a6b7c;
+  margin-bottom: 30px;
+  font-size: 15px;
+}
+
+/* ===== Form ===== */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===== Input Group ===== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d9e8;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: 0.3s;
+  outline: none;
+  box-sizing: border-box;
+  background: #fafcff;
+}
+
+.form-group input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  background: #ffffff;
+}
+
+/* ===== Password ===== */
+
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: #5a6b7c;
+  transition: 0.3s;
+}
+
+.password-toggle:hover {
+  color: #4a90e2;
+}
+
+/* ===== Hint ===== */
+
+.password-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #7a8b9c;
+}
+
+/* ===== Errors ===== */
+
+.error {
+  color: #e53935;
+  margin-top: 6px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.server-error {
+  color: #e53935;
+  background: #ffecec;
+  border: 1px solid #ffc9c9;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ===== Button ===== */
+
+.auth-btn {
+  margin-top: 10px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: #357abd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.auth-btn:disabled {
+  background: #b0c4de;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Footer ===== */
+
+.auth-footer {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 15px;
+  color: #5a6b7c;
+}
+
+.auth-footer a {
+  color: #4a90e2;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.auth-footer a:hover {
+  color: #357abd;
+  text-decoration: underline;
+}
+
+/* ===== Input Validation ===== */
+
+.input-error {
+  border: 1px solid #e53935 !important;
+  background: #fff5f5 !important;
+}
+
+.input-error:focus {
+  border-color: #e53935 !important;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1) !important;
+}
+
+.input-success {
+  border: 1px solid #43a047 !important;
+  background: #f5fff5 !important;
+}
+
+.input-success:focus {
+  border-color: #43a047 !important;
+  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1) !important;
+}
+
+/* ===== Textarea ===== */
+
+.form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d9e8;
+  border-radius: 8px;
+  font-size: 15px;
+  resize: vertical;
+  min-height: 110px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: #fafcff;
+}
+
+.form-group textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  background: #ffffff;
+}
+
+textarea.input-error {
+  border: 1px solid #e53935 !important;
+  background: #fff5f5 !important;
+}
+
+textarea.input-success {
+  border: 1px solid #43a047 !important;
+  background: #f5fff5 !important;
+}
+
+/* ===== Select Dropdown (if used) ===== */
+
+.form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d9e8;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: 0.3s;
+  outline: none;
+  box-sizing: border-box;
+  background: #fafcff;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* ===== Checkbox/Radio (if used) ===== */
+
+.form-group input[type="checkbox"],
+.form-group input[type="radio"] {
+  width: auto;
+  margin-right: 8px;
+  accent-color: #4a90e2;
+  cursor: pointer;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 500px) {
+  .auth-card {
+    padding: 25px;
+    margin: 10px;
+  }
+
+  .auth-title {
+    font-size: 28px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+  }
+
+  .auth-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+}
+
+/* ===== Additional: Success/Info Messages ===== */
+
+.success-message {
+  color: #43a047;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.info-message {
+  color: #4a90e2;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+}
