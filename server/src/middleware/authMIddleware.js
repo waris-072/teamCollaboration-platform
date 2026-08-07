@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import User from "../models/User.js";
 
 export const isAuthenticated = async (req, res, next) => {
   try {
@@ -31,15 +31,4 @@ export const isAuthenticated = async (req, res, next) => {
       message: "Invalid or expired token.",
     });
   }
-};
-
-export const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({
-      success: false,
-      message: "Access denied. Admin only.",
-    });
-  }
-
-  next();
 };
