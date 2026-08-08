@@ -147,6 +147,62 @@ export async function getProjectByIdService(projectId, user) {
 }
 
 // Update Project Service
+export async function updateProjectService(projectId, data, user) {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new Error("Project not found.");
+    }
+
+    if (user.role === "member") {
+        throw new Error("You are not allowed to update projects.");
+    }
+
+    if (
+        user.role === "manager" &&
+        project.manager.toString() !== user._id.toString()
+    ) {
+        throw new Error("You can only update your own projects.");
+    }
+
+    if (data.manager !== undefined) {
+        await validateManager(data.manager);
+        project.manager = data.manager;
+    }
+
+    if (data.members !== undefined) {
+        project.members = await validateMembers(data.members);
+    }
+
+    if (data.title !== undefined) {
+        project.title = data.title;
+    }
+
+    if (data.description !== undefined) {
+        project.description = data.description;
+    }
+
+    if (data.priority !== undefined) {
+        project.priority = data.priority;
+    }
+
+    if (data.startDate !== undefined) {
+        project.startDate = data.startDate;
+    }
+
+    if (data.endDate !== undefined) {
+        project.endDate = data.endDate;
+    }
+
+    await project.save();
+
+    return await Project.findById(project._id)
+        .populate("manager", "name email role")
+        .populate("members", "name email role")
+        .populate("createdBy", "name email role");
+}
+
+// Update Project Status Service
 export async function updateProjectStatusService(projectId,status,user) {
     const project = await Project.findById(projectId);
 

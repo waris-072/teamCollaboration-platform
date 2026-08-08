@@ -38,6 +38,18 @@ export async function createNotificationService(data) {
     return populatedNotification;
 }
 
+// Get notifications for the current user
+export async function getMyNotificationsService(currentUser) {
+    const notifications = await Notification.find({
+        recipient: currentUser._id,
+    })
+        .populate("recipient", "name email role")
+        .populate("sender", "name email role")
+        .sort({ createdAt: -1 });
+
+    return notifications;
+}
+
 // Mark a notification as read for the current user
 export async function markNotificationAsReadService(notificationId,currentUser) {
     const notification = await Notification.findById(notificationId);

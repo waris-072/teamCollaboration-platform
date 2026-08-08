@@ -1,5 +1,5 @@
 import { validateCreateProject } from "../validators/projectValidators.js";
-import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, deleteProjectService, addProjectMembersService, removeProjectMembersService } from "../services/projectService.js";
+import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, updateProjectStatusService, deleteProjectService, addProjectMembersService, removeProjectMembersService } from "../services/projectService.js";
 
 export async function createProjectController(req, res) {
   try {
