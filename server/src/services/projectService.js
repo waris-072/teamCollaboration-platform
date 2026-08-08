@@ -48,9 +48,8 @@ async function validateMembers(memberIds = []) {
     return uniqueMembers;
 }
 
-// ======================================
-// Project Services
-// ======================================
+
+
 //Create Project
 export async function createProjectService(data, adminId) {
     const {
