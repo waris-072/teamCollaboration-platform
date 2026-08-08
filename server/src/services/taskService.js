@@ -2,6 +2,8 @@ import Project from "../models/Project.js";
 import Task from "../models/Task.js";
 import User from "../models/User.js";
 
+import { createNotificationService, } from "./notificationService.js";
+
 // Validate Project
 async function validateProject(projectId, user) {
     const project = await Project.findById(projectId);
@@ -38,7 +40,7 @@ async function validateAssignee(userId, project) {
         throw new Error("Assigned member is inactive.");
     }
 
-    const belongsToProject = project.members.some((id) => 
+    const belongsToProject = project.members.some((id) =>
         id.toString() === userId.toString()
     );
 
@@ -92,6 +94,21 @@ export async function createTaskService(data, currentUser) {
         createdBy: currentUser._id,
     });
 
+    try {
+        await createNotificationService({
+            recipient: assignedTo,
+            sender: currentUser._id,
+            title: "New Task Assigned",
+            message: `You have been assigned a new task: "${title}".`,
+            type: "task_assigned",
+        });
+    } catch (error) {
+        console.error(
+            "Task assignment notification failed:",
+            error.message
+        );
+    }
+
     return await Task.findById(task._id)
         .populate("project", "title status")
         .populate("assignedTo", "name email")
@@ -100,8 +117,8 @@ export async function createTaskService(data, currentUser) {
 
 // Get All Tasks Service
 export async function getTasksService(currentUser) {
-    let filter = { 
-        isArchived: false 
+    let filter = {
+        isArchived: false
     };
 
     if (currentUser.role === "manager") {
@@ -180,6 +197,7 @@ export async function updateTaskService(taskId, data, currentUser) {
     if (!task) {
         throw new Error("Task not found.");
     }
+    const previousAssignee = task.assignedTo.toString();
 
     if (task.isArchived) {
         throw new Error("Task has been archived.");
@@ -197,7 +215,7 @@ export async function updateTaskService(taskId, data, currentUser) {
     if (
         currentUser.role === "manager" &&
         project.manager.toString() !==
-            currentUser._id.toString()
+        currentUser._id.toString()
     ) {
         throw new Error("You can only update tasks in your own projects.");
     }
@@ -210,8 +228,15 @@ export async function updateTaskService(taskId, data, currentUser) {
         task.description = data.description;
     }
 
+    let taskReassigned = false;
+
     if (data.assignedTo !== undefined) {
         await validateAssignee(data.assignedTo, project);
+
+        if (data.assignedTo.toString() !== previousAssignee) {
+            taskReassigned = true;
+        }
+
         task.assignedTo = data.assignedTo;
     }
 
@@ -225,6 +250,32 @@ export async function updateTaskService(taskId, data, currentUser) {
     }
 
     await task.save();
+    if (taskReassigned) {
+        try {
+            await createNotificationService({
+                recipient: previousAssignee,
+                sender: currentUser._id,
+                title: "Task Reassigned",
+                message: `The task "${task.title}" has been reassigned to another member.`,
+                type: "task_updated",
+            });
+
+            await createNotificationService({
+                recipient: task.assignedTo,
+                sender: currentUser._id,
+                title: "New Task Assigned",
+                message: `You have been assigned a new task: "${task.title}".`,
+                type: "task_assigned",
+            });
+        } catch (error) {
+            console.error(
+                "Task reassignment notification failed:",
+                error.message
+            );
+        }
+    }
+
+
     return await Task.findById(task._id)
         .populate("project", "title status")
         .populate("assignedTo", "name email role")
@@ -232,7 +283,10 @@ export async function updateTaskService(taskId, data, currentUser) {
 }
 
 // Update Task Status Service
-export async function updateTaskStatusService(taskId, status, currentUser) {
+// ======================================
+// Update Task Status
+// ======================================
+export async function updateTaskStatusService(taskId,status,currentUser) {
     const task = await Task.findById(taskId);
 
     if (!task) {
@@ -240,7 +294,7 @@ export async function updateTaskStatusService(taskId, status, currentUser) {
     }
 
     if (task.isArchived) {
-        throw new Error("Task has been archived.");
+        throw new Error("Archived tasks cannot be updated.");
     }
 
     const allowedStatus = ["todo","in-progress","review","completed",];
@@ -248,33 +302,34 @@ export async function updateTaskStatusService(taskId, status, currentUser) {
         throw new Error("Invalid task status.");
     }
 
-    if (currentUser.role === "admin") {
-        task.status = status;
+    const previousStatus = task.status;
 
-        await task.save();
-
+    if (previousStatus === status) {
         return await Task.findById(task._id)
             .populate("project", "title status")
             .populate("assignedTo", "name email role")
             .populate("createdBy", "name email role");
     }
 
-    if (currentUser.role === "manager") {
-        const project = await Project.findById(task.project);
-
-        if (!project) {
-            throw new Error("Project not found.");
-        }
-
-        if (
-            project.manager.toString() !==
-            currentUser._id.toString()
-        ) {
-            throw new Error("You can only update tasks in your own projects.");
-        }
-
+    if (currentUser.role === "admin") {
         task.status = status;
         await task.save();
+
+        try {
+            await createNotificationService({
+                recipient: task.assignedTo,
+                sender: currentUser._id,
+                title: "Task Status Updated",
+                message: `The status of "${task.title}" was changed from "${previousStatus}" to "${status}".`,
+                type: "task_updated",
+            });
+        } catch (error) {
+            console.error(
+                "Task status notification failed:",
+                error.message
+            );
+        }
+
         return await Task.findById(task._id)
             .populate("project", "title status")
             .populate("assignedTo", "name email role")
@@ -293,10 +348,35 @@ export async function updateTaskStatusService(taskId, status, currentUser) {
 
         task.status = status;
         await task.save();
+
+        // Find project manager
+        const project = await Project.findById(task.project).select("manager");
+
+        if (project) {
+            try {
+                await createNotificationService({
+                    recipient: project.manager,
+                    sender: currentUser._id,
+                    title: "Task Status Updated",
+                    message: `"${task.title}" changed from "${previousStatus}" to "${status}".`,
+                    type: "task_updated",
+                });
+            } catch (error) {
+                console.error(
+                    "Task status notification failed:",
+                    error.message
+                );
+            }
+        }
+
         return await Task.findById(task._id)
             .populate("project", "title status")
             .populate("assignedTo", "name email role")
             .populate("createdBy", "name email role");
+    }
+
+    if (currentUser.role === "manager") {
+        throw new Error("Project managers cannot update task status.");
     }
 
     throw new Error("You are not authorized to update task status.");

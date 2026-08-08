@@ -11,7 +11,7 @@ const notificationSchema = new mongoose.Schema(
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
 
     title: {
@@ -31,7 +31,7 @@ const notificationSchema = new mongoose.Schema(
       enum: [
         "task_assigned",
         "task_updated",
-        "comment_added",
+        "project_updated",
         "deadline",
       ],
       required: true,

@@ -1,5 +1,5 @@
 import { validateCreateProject } from "../validators/projectValidators.js";
-import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, deleteProjectService, addProjectMembersService } from "../services/projectService.js";
+import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, deleteProjectService, addProjectMembersService, removeProjectMembersService } from "../services/projectService.js";
 
 export async function createProjectController(req, res) {
   try {
@@ -12,7 +12,7 @@ export async function createProjectController(req, res) {
       });
     }
 
-    const project = await createProjectService( req.body, req.user._id );
+    const project = await createProjectService(req.body, req.user._id);
 
     return res.status(201).json({
       success: true,
@@ -49,7 +49,7 @@ export async function getProjectsController(req, res) {
 
 export async function getProjectByIdController(req, res) {
   try {
-    const project = await getProjectByIdService( req.params.projectId, req.user );
+    const project = await getProjectByIdService(req.params.projectId, req.user);
 
     return res.status(200).json({
       success: true,
@@ -69,9 +69,9 @@ export async function getProjectByIdController(req, res) {
 export async function updateProjectController(req, res) {
   try {
     const project = await updateProjectService(
-        req.params.projectId,
-        req.body,
-        req.user
+      req.params.projectId,
+      req.body,
+      req.user
     );
 
     return res.status(200).json({
@@ -87,12 +87,12 @@ export async function updateProjectController(req, res) {
   }
 }
 
-export async function updateProjectStatusController(req,res) {
+export async function updateProjectStatusController(req, res) {
   try {
     const project = await updateProjectStatusService(
-        req.params.projectId,
-        req.body.status,
-        req.user
+      req.params.projectId,
+      req.body.status,
+      req.user
     );
 
     return res.status(200).json({
@@ -110,32 +110,57 @@ export async function updateProjectStatusController(req,res) {
 
 export async function deleteProjectController(req, res) {
   try {
-    await deleteProjectService(req.params.projectId);
+    const { projectId } = req.params;
+    await deleteProjectService(projectId, req.user);
 
     return res.status(200).json({
       success: true,
       message: "Project deleted successfully.",
     });
   } catch (error) {
-    return res.status(404).json({
+    return res.status(400).json({
       success: false,
       message: error.message,
     });
   }
 }
 
-export async function addProjectMembersController(req,res) {
+export async function addProjectMembersController(req, res) {
   try {
     const project = await addProjectMembersService(
-        req.params.projectId,
-        req.body.members,
-        req.user
+      req.params.projectId,
+      req.body.members,
+      req.user
     );
 
     return res.status(200).json({
       success: true,
       message: "Members added successfully.",
       project,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+export async function removeProjectMembersController(req, res) {
+  try {
+    const { projectId } = req.params;
+    const { memberIds } = req.body;
+
+    const project = await removeProjectMembersService(
+      projectId,
+      memberIds,
+      req.user
+    );
+    return res.status(200).json({
+      success: true,
+      message:
+        "Project members removed successfully.",
+      data: project,
     });
   } catch (error) {
     return res.status(400).json({

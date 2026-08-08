@@ -1,5 +1,8 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
+import Task from "../models/Task.js";
+import TaskComment from "../models/TaskComment.js";
+import { createNotificationService, } from "./notificationService.js";
 
 // ======================================
 // Private Helper Functions
@@ -144,101 +147,132 @@ export async function getProjectByIdService(projectId, user) {
 }
 
 // Update Project Service
-export async function updateProjectService(projectId, data, user) {
+export async function updateProjectStatusService(projectId,status,user) {
     const project = await Project.findById(projectId);
 
     if (!project) {
         throw new Error("Project not found.");
     }
 
-    if (
-        user.role === "manager" &&
-        project.manager.toString() !== user._id.toString()
-    ) {
-        throw new Error("You can only update your own projects.");
-    }
+    const allowedStatus = ["planning","active","completed","cancelled",];
 
-    if (user.role === "member") {
-        throw new Error("You are not allowed to update projects.");
-    }
-
-    if (data.manager) {
-        await validateManager(data.manager);
-        project.manager = data.manager;
-    }
-
-    if (data.members) {
-        project.members = await validateMembers(data.members);
-    }
-
-    if (data.title !== undefined) {
-        project.title = data.title;
-    }
-
-    if (data.description !== undefined) {
-        project.description = data.description;
-    }
-
-    if (data.priority !== undefined) {
-        project.priority = data.priority;
-    }
-
-    if (data.status !== undefined) {
-        project.status = data.status;
-    }
-
-    if (data.startDate !== undefined) {
-        project.startDate = data.startDate;
-    }
-
-    if (data.endDate !== undefined) {
-        project.endDate = data.endDate;
-    }
-
-    await project.save();
-
-    return await Project.findById(project._id)
-        .populate("manager", "name email role")
-        .populate("members", "name email role")
-        .populate("createdBy", "name email role");
-}
-
-// Update Project Status
-export async function updateProjectStatusService(projectId, status, user) {
-    const project = await Project.findById(projectId);
-
-    if (!project) {
-        throw new Error("Project not found.");
-    }
-
-    if (
-        user.role === "manager" &&
-        project.manager.toString() !== user._id.toString()
-    ) {
-        throw new Error("You can only update your own projects.");
-    }
-
-    const allowedStatus = ["planning", "active", "completed", "cancelled",];
     if (!allowedStatus.includes(status)) {
         throw new Error("Invalid project status.");
     }
 
-    project.status = status;
-    await project.save();
-    return project;
+    const previousStatus = project.status;
+
+    if (previousStatus === status) {
+        return project;
+    }
+
+    if (user.role === "admin") {
+        project.status = status;
+        await project.save();
+       
+        try {
+            await createNotificationService({
+                recipient: project.manager,
+                sender: user._id,
+                title: "Project Status Updated",
+                message: `The project "${project.title}" changed from "${previousStatus}" to "${status}".`,
+                type: "project_updated",
+            });
+        } catch (error) {
+            console.error(
+                "Project status notification to manager failed:",
+                error.message
+            );
+        }
+
+        for (const memberId of project.members) {
+            try {
+                await createNotificationService({
+                    recipient: memberId,
+                    sender: user._id,
+                    title: "Project Status Updated",
+                    message: `The project "${project.title}" changed from "${previousStatus}" to "${status}".`,
+                    type: "project_updated",
+                });
+            } catch (error) {
+                console.error(
+                    "Project status notification to member failed:",
+                    error.message
+                );
+            }
+        }
+        return project;
+    }
+
+    if (user.role === "manager") {
+        if (
+            project.manager.toString() !==
+            user._id.toString()
+        ) {
+            throw new Error(
+                "You can only update the status of your own projects."
+            );
+        }
+
+        project.status = status;
+        await project.save();
+
+        for (const memberId of project.members) {
+            try {
+                await createNotificationService({
+                    recipient: memberId,
+                    sender: user._id,
+                    title: "Project Status Updated",
+                    message: `The project "${project.title}" changed from "${previousStatus}" to "${status}".`,
+                    type: "project_updated",
+                });
+            } catch (error) {
+                console.error(
+                    "Project status notification failed:",
+                    error.message
+                );
+            }
+        }
+        return project;
+    }
+
+    throw new Error(
+        "Team members cannot update project status."
+    );
 }
 
-export async function deleteProjectService(projectId) {
-  const project = await Project.findById(projectId);
+// Delete Project Service
+export async function deleteProjectService(projectId,user) {
+    const project = await Project.findById(projectId);
 
-  if (!project) {
-    throw new Error("Project not found.");
-  }
+    if (!project) {
+        throw new Error("Project not found.");
+    }
 
-  await project.deleteOne();
-  return;
+    if (user.role !== "admin") {
+        throw new Error("Only admins can delete projects.");
+    }
+
+    const tasks = await Task.find({project: project._id,}).select("_id");
+    const taskIds = tasks.map((task) => task._id);
+
+    if (taskIds.length > 0) {
+        await TaskComment.deleteMany({
+            task: {
+                $in: taskIds,
+            },
+        });
+    }
+
+    await Task.deleteMany({
+        project: project._id,
+    });
+
+    await project.deleteOne();
+    return;
 }
 
+// Add Project Members Service
 export async function addProjectMembersService(projectId,memberIds,user) {
   const project = await Project.findById(projectId);
 
@@ -270,4 +304,56 @@ export async function addProjectMembersService(projectId,memberIds,user) {
     .populate("manager", "name email role")
     .populate("members", "name email role")
     .populate("createdBy", "name email role");
+}
+
+// Remove Project Members Service
+export async function removeProjectMembersService(projectId,memberIds,user) {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new Error("Project not found.");
+    }
+
+    if (user.role !== "admin" && user.role !== "manager" ) {
+        throw new Error( "You are not authorized to manage project members." );
+    }
+
+    if (
+        user.role === "manager" &&
+        project.manager.toString() !==
+            user._id.toString()
+    ) {
+        throw new Error("You can only manage members of your own projects.");
+    }
+
+    if (!Array.isArray(memberIds) || !memberIds.length) {
+        throw new Error("Member IDs are required.");
+    }
+
+    const membersToRemove = new Set(memberIds.map((id) => id.toString()));
+
+    const projectMemberIds = new Set(
+        project.members.map((id) =>
+            id.toString()
+        )
+    );
+
+    for (const memberId of membersToRemove) {
+        if (!projectMemberIds.has(memberId)) {
+            throw new Error(
+                "One or more users are not members of this project."
+            );
+        }
+    }
+
+    project.members = project.members.filter(
+        (memberId) => !membersToRemove.has(memberId.toString())
+    );
+
+    await project.save();
+
+    return await Project.findById(project._id)
+        .populate( "manager", "name email role" )
+        .populate("members","name email role")
+        .populate("createdBy","name email role");
 }
