@@ -51,6 +51,11 @@ const taskSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -60,6 +65,7 @@ const taskSchema = new mongoose.Schema(
 taskSchema.index({ project: 1 });
 taskSchema.index({ assignedTo: 1 });
 taskSchema.index({ status: 1 });
+taskSchema.index({ isArchived: 1 });
 
 const Task = mongoose.model("Task", taskSchema);
 
