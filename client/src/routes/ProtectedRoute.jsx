@@ -1,19 +1,21 @@
-import { Navigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-  import Loader from "../components/loader/Loader";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-function ProtectedRoute({children}) {
+import useAuth from "../hooks/useAuth";
+import Loader from "../components/loader/Loader";
+
+const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return <Loader message="Checking your account..." />;
+    return <Loader />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  return children;
-}
+  return <Outlet />;
+};
 
 export default ProtectedRoute;

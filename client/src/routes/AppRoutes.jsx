@@ -1,13 +1,97 @@
-import { Routes, Route } from "react-router-dom";
-import Login from "../pages/auth/Login";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-function AppRoutes() {
+import Login from "../pages/auth/Login";
+import Unauthorized from "../pages/auth/Unauthorized";
+
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+
+import ProtectedRoute from "./ProtectedRoute";
+import RoleRoute from "./RoleRoute";
+
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminProjects from "../pages/admin/AdminProjects";
+import AdminTasks from "../pages/admin/AdminTasks";
+import AdminUsers from "../pages/admin/AdminUsers";
+
+import ManagerDashboard from "../pages/manager/ManagerDashboard";
+import ManagerProjects from "../pages/manager/ManagerProjects";
+import ManagerTasks from "../pages/manager/ManagerTasks";
+import ManagerMembers from "../pages/manager/ManagerMembers";
+
+import MemberDashboard from "../pages/member/MemberDashboard";
+import MemberTasks from "../pages/member/MemberTasks";
+
+import Notifications from "../pages/notifications/Notifications";
+import Profile from "../pages/profile/Profile";
+
+const AppRoutes = () => {
   return (
     <Routes>
-      {/* Auth */}
+      {/* Public Routes */}
+
       <Route path="/login" element={<Login />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* Protected Routes */}
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+
+          {/* Admin */}
+
+          <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/projects" element={<AdminProjects />} />
+            <Route path="/admin/tasks" element={<AdminTasks />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/notifications" element={<Notifications />} />
+            <Route path="/admin/profile" element={<Profile />} />
+          </Route>
+
+          {/* Manager */}
+
+          <Route element={<RoleRoute allowedRoles={["manager"]} />}>
+            <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+            <Route path="/manager/projects" element={<ManagerProjects />} />
+            <Route path="/manager/tasks" element={<ManagerTasks />} />
+            <Route path="/manager/members" element={<ManagerMembers />} />
+            <Route path="/manager/notifications" element={<Notifications />} />
+            <Route path="/manager/profile" element={<Profile />} />
+          </Route>
+
+          {/* Member */}
+
+          <Route element={<RoleRoute allowedRoles={["member"]} />}>
+            <Route path="/member/dashboard" element={<MemberDashboard />} />
+            <Route path="/member/tasks" element={<MemberTasks />} />
+            <Route path="/member/notifications" element={<Notifications />} />
+            <Route path="/member/profile" element={<Profile />} />
+          </Route>
+
+        </Route>
+      </Route>
+
+      {/* Role Base Paths */}
+
+      <Route path="/admin" element={
+        <Navigate to="/admin/dashboard" replace />
+      }/>
+
+      <Route path="/manager" element={
+        <Navigate to="/manager/dashboard" replace />
+      }/>
+
+      <Route path="/member" element={
+        <Navigate to="/member/dashboard" replace />
+      }/>
+
+      {/* Unknown Routes */}
+
+      <Route path="*" element={
+        <Navigate to="/login" replace />
+      }/>
     </Routes>
   );
-}
+};
 
 export default AppRoutes;

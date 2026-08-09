@@ -1,0 +1,47 @@
+.dashboard-layout {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.dashboard-main {
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+}
+
+.dashboard-content {
+  min-height: calc(100vh - var(--topbar-height));
+  padding: 24px;
+}
+
+/* =================================
+Role Theme Variables
+================================= */
+
+.dashboard-admin {
+  --role-primary: var(--admin-primary);
+  --role-primary-dark: var(--admin-primary-dark);
+  --role-primary-light: var(--admin-primary-light);
+}
+
+.dashboard-manager {
+  --role-primary: var(--manager-primary);
+  --role-primary-dark: var(--manager-primary-dark);
+  --role-primary-light: var(--manager-primary-light);
+}
+
+.dashboard-member {
+  --role-primary: var(--member-primary);
+  --role-primary-dark: var(--member-primary-dark);
+  --role-primary-light: var(--member-primary-light);
+}
+
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: 0;
+  }
+
+  .dashboard-content {
+    padding: 20px 16px;
+  }
+}
