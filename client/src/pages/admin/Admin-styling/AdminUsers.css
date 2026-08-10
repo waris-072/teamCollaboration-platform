@@ -1,0 +1,1267 @@
+/* =========================================================
+   Admin Users Page - Modern Redesign
+========================================================= */
+
+.admin-users-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* =========================================================
+   Header with Search & Filters
+========================================================= */
+
+.admin-users-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-users-header-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Search
+========================================================= */
+
+.admin-users-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  min-width: 200px;
+  position: relative;
+}
+
+.admin-users-search:focus-within {
+  border-color: var(--role-primary);
+  box-shadow: 0 0 0 4px var(--role-primary-light);
+  transform: translateY(-1px);
+}
+
+.admin-users-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.admin-users-search-btn:hover {
+  background: var(--color-bg);
+  color: var(--role-primary);
+  transform: scale(1.05);
+}
+
+.admin-users-search-btn:active {
+  transform: scale(0.95);
+}
+
+.admin-users-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  min-width: 0;
+  padding: 0.3rem 0;
+}
+
+.admin-users-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.admin-users-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  animation: fadeIn 0.2s ease;
+}
+
+.admin-users-search-clear:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+  transform: rotate(90deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* =========================================================
+   Filters
+========================================================= */
+
+.admin-users-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.admin-users-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.admin-users-filter:focus-within {
+  border-color: var(--role-primary);
+  box-shadow: 0 0 0 4px var(--role-primary-light);
+}
+
+.admin-users-filter svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
+}
+
+.admin-users-filter:focus-within svg {
+  color: var(--role-primary);
+}
+
+.admin-users-filter select {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding-right: 0.25rem;
+}
+
+.admin-users-filter select option {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* =========================================================
+   Clear Filters
+========================================================= */
+
+.admin-users-clear-filters {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.admin-users-clear-filters:hover {
+  background: var(--color-bg);
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.admin-users-clear-filters svg {
+  font-size: 0.8rem;
+}
+
+/* =========================================================
+   Result Info
+========================================================= */
+
+.admin-users-result-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.admin-users-result-info strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.admin-users-filter-active {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--role-primary-light);
+  color: var(--role-primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Mobile Create Button - Hidden on desktop
+========================================================= */
+
+.admin-users-create-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--role-primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-users-create-mobile:hover {
+  background: var(--role-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--role-primary-light);
+}
+
+.admin-users-create-mobile:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   Error State
+========================================================= */
+
+.admin-users-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-md);
+  background: rgba(220, 38, 38, 0.06);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}
+
+.admin-users-error button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-danger);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-users-error button:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* =========================================================
+   Main Layout
+========================================================= */
+
+.admin-users-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 2.1fr);
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* =========================================================
+   Desktop Form Card
+========================================================= */
+
+.admin-users-form-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.admin-users-card-header {
+  margin-bottom: 1.25rem;
+}
+
+.admin-users-card-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.admin-users-card-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+/* =========================================================
+   Users List Card
+========================================================= */
+
+.admin-users-list-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+/* =========================================================
+   Users Grid - Card Layout
+========================================================= */
+
+.admin-users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.admin-users-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-users-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-users-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--color-border);
+}
+
+.admin-users-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* =========================================================
+   User Card - Role-Based Theming
+========================================================= */
+
+.admin-user-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  border-top: 4px solid transparent;
+}
+
+/* Role-based top border */
+.admin-user-card[data-role="admin"]:hover {
+  border-top-color: var(--admin-primary);
+}
+
+.admin-user-card[data-role="manager"]:hover {
+  border-top-color: var(--manager-primary);
+}
+
+.admin-user-card[data-role="member"]:hover {
+  border-top-color: var(--member-primary);
+}
+
+.admin-user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-user-card-inactive {
+  opacity: 0.7;
+}
+
+.admin-user-card-inactive:hover {
+  opacity: 0.9;
+}
+
+/* Card Header */
+.admin-user-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-user-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* =========================================================
+   User Avatar - Role-Based
+========================================================= */
+
+.admin-user-avatar {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+
+/* Role-based avatar backgrounds */
+.admin-user-card[data-role="admin"] .admin-user-avatar {
+  background: linear-gradient(135deg, var(--admin-primary-light) 0%, var(--admin-primary) 100%);
+}
+
+.admin-user-card[data-role="manager"] .admin-user-avatar {
+  background: linear-gradient(135deg, var(--manager-primary-light) 0%, var(--manager-primary) 100%);
+}
+
+.admin-user-card[data-role="member"] .admin-user-avatar {
+  background: linear-gradient(135deg, var(--member-primary-light) 0%, var(--member-primary) 100%);
+}
+
+.admin-user-card:hover .admin-user-avatar {
+  transform: scale(1.05);
+}
+
+.admin-user-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* =========================================================
+   Status Dot
+========================================================= */
+
+.admin-user-status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface);
+  transition: all 0.3s ease;
+}
+
+.admin-user-status-dot.active {
+  background: var(--color-success);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+
+.admin-user-status-dot.inactive {
+  background: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+/* =========================================================
+   Role Icon - Role-Based
+========================================================= */
+
+.admin-user-role-icon {
+  font-size: 1.1rem;
+  padding: 0.4rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  transition: all 0.3s ease;
+}
+
+/* Role-based role icon colors */
+.admin-user-card[data-role="admin"] .admin-user-role-icon {
+  color: var(--admin-primary);
+  background: var(--admin-primary-light);
+}
+
+.admin-user-card[data-role="manager"] .admin-user-role-icon {
+  color: var(--manager-primary);
+  background: var(--manager-primary-light);
+}
+
+.admin-user-card[data-role="member"] .admin-user-role-icon {
+  color: var(--member-primary);
+  background: var(--member-primary-light);
+}
+
+.admin-user-card:hover .admin-user-role-icon {
+  transform: scale(1.1);
+}
+
+/* Card Body */
+.admin-user-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-user-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.admin-user-email {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  word-break: break-all;
+}
+
+.admin-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Role Badge - Role-Based
+========================================================= */
+
+.user-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.user-role-badge svg {
+  font-size: 0.55rem;
+}
+
+/* Role-based badge colors */
+.admin-user-card[data-role="admin"] .user-role-badge {
+  background: var(--admin-primary-light);
+  color: var(--admin-primary);
+}
+
+.admin-user-card[data-role="manager"] .user-role-badge {
+  background: var(--manager-primary-light);
+  color: var(--manager-primary);
+}
+
+.admin-user-card[data-role="member"] .user-role-badge {
+  background: var(--member-primary-light);
+  color: var(--member-primary);
+}
+
+/* =========================================================
+   Status Badge
+========================================================= */
+
+.user-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.user-status-active {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--color-success);
+}
+
+.user-status-active::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: pulse 2s infinite;
+}
+
+.user-status-inactive {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-danger);
+}
+
+.user-status-inactive::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--color-danger);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* Card Footer */
+.admin-user-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.user-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.user-action-btn svg {
+  font-size: 0.85rem;
+}
+
+.user-action-btn:hover {
+  background: var(--color-bg);
+  transform: scale(1.02);
+}
+
+.user-action-details:hover {
+  color: var(--color-info);
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.user-action-role:hover {
+  color: var(--color-warning);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.user-action-deactivate:hover {
+  color: var(--color-danger);
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.user-action-activate:hover {
+  color: var(--color-success);
+  background: rgba(22, 163, 74, 0.08);
+}
+
+/* =========================================================
+   State Components
+========================================================= */
+
+.admin-users-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  min-height: 300px;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--role-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.admin-users-state h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.admin-users-state p {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--role-primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-state-btn:hover {
+  background: var(--role-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--role-primary-light);
+}
+
+/* =========================================================
+   Mobile Modal
+========================================================= */
+
+.admin-users-mobile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.admin-users-mobile-modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.admin-users-mobile-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.admin-users-mobile-modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.admin-users-mobile-modal-header p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.admin-users-mobile-modal-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.admin-users-mobile-modal-header button:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+  transform: rotate(90deg);
+}
+
+.admin-users-mobile-modal > :last-child {
+  padding: 1.5rem;
+}
+
+/* =========================================================
+   Responsive - Tablet
+========================================================= */
+
+@media (max-width: 1024px) {
+  .admin-users-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .admin-users-form-card {
+    display: none;
+  }
+
+  .admin-users-create-mobile {
+    display: inline-flex;
+  }
+
+  .admin-users-header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-users-filters {
+    flex-wrap: wrap;
+  }
+
+  .admin-users-result-info {
+    align-self: flex-start;
+  }
+
+  .admin-users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+}
+
+/* =========================================================
+   Responsive - Mobile
+========================================================= */
+
+@media (max-width: 768px) {
+  .admin-users-header {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .admin-users-search {
+    min-width: 150px;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .admin-users-search-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .admin-users-search-clear {
+    width: 24px;
+    height: 24px;
+  }
+
+  .admin-users-search input {
+    font-size: 0.85rem;
+  }
+
+  .admin-users-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-users-filter {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .admin-users-filter select {
+    flex: 1;
+    font-size: 0.8rem;
+  }
+
+  .admin-users-clear-filters {
+    justify-content: center;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .admin-users-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  /* Smaller Cards for Mobile */
+  .admin-user-card {
+    padding: 0.75rem;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .admin-user-card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Smaller Avatar */
+  .admin-user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .admin-user-status-dot {
+    width: 10px;
+    height: 10px;
+    bottom: 0px;
+    right: 0px;
+    border-width: 1.5px;
+  }
+
+  /* Smaller Role Icon */
+  .admin-user-role-icon {
+    font-size: 0.85rem;
+    padding: 0.3rem;
+  }
+
+  /* Compact Card Body */
+  .admin-user-card-body {
+    gap: 0.25rem;
+  }
+
+  .admin-user-name {
+    font-size: 0.85rem;
+  }
+
+  .admin-user-email {
+    font-size: 0.7rem;
+    margin-top: -2px;
+  }
+
+  /* Smaller Badges */
+  .user-role-badge {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .user-role-badge svg {
+    font-size: 0.45rem;
+  }
+
+  .user-status-badge {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .user-status-badge::before {
+    width: 4px;
+    height: 4px;
+  }
+
+  /* Compact Actions */
+  .admin-user-card-footer {
+    padding-top: 0.5rem;
+    gap: 0.25rem;
+  }
+
+  .user-action-btn {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .user-action-btn svg {
+    font-size: 0.7rem;
+  }
+
+  .admin-users-result-info {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  /* Adjust grid max height */
+  .admin-users-grid {
+    max-height: 500px;
+  }
+}
+
+/* =========================================================
+   Responsive - Small Mobile
+========================================================= */
+
+@media (max-width: 480px) {
+  .admin-users-header-toolbar {
+    gap: 0.5rem;
+  }
+
+  .admin-users-search {
+    min-width: 120px;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .admin-users-search-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .admin-users-search-btn svg {
+    font-size: 0.75rem;
+  }
+
+  .admin-users-search-clear {
+    width: 20px;
+    height: 20px;
+  }
+
+  .admin-users-search-clear svg {
+    font-size: 0.65rem;
+  }
+
+  .admin-users-search input {
+    font-size: 0.8rem;
+  }
+
+  .admin-users-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    max-height: 450px;
+  }
+
+  /* Even Smaller Cards for Small Mobile */
+  .admin-user-card {
+    padding: 0.6rem;
+    gap: 0.4rem;
+    border-radius: var(--radius-sm);
+    border-top-width: 3px;
+  }
+
+  .admin-user-card-header {
+    gap: 0.3rem;
+  }
+
+  .admin-user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  .admin-user-status-dot {
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
+  }
+
+  .admin-user-role-icon {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+
+  .admin-user-name {
+    font-size: 0.8rem;
+  }
+
+  .admin-user-email {
+    font-size: 0.65rem;
+  }
+
+  .admin-user-meta {
+    gap: 0.3rem;
+    margin-top: 0.15rem;
+  }
+
+  .user-role-badge {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.35rem;
+    gap: 0.2rem;
+  }
+
+  .user-role-badge svg {
+    font-size: 0.4rem;
+  }
+
+  .user-status-badge {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.35rem;
+  }
+
+  .user-status-badge::before {
+    width: 3px;
+    height: 3px;
+    margin-right: 3px;
+  }
+
+  .admin-user-card-footer {
+    padding-top: 0.4rem;
+    gap: 0.2rem;
+  }
+
+  .user-action-btn {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.3rem;
+    gap: 0.15rem;
+  }
+
+  .user-action-btn svg {
+    font-size: 0.6rem;
+  }
+
+  .admin-users-result-info {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .admin-users-create-mobile {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .admin-users-mobile-modal {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+
+  .admin-users-mobile-modal-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .admin-users-mobile-modal-header h2 {
+    font-size: 0.95rem;
+  }
+
+  .admin-users-mobile-modal-header p {
+    font-size: 0.7rem;
+  }
+
+  .admin-users-mobile-modal > :last-child {
+    padding: 0.75rem;
+  }
+}
+
+/* =========================================================
+   Responsive - Extra Small Mobile
+========================================================= */
+
+@media (max-width: 360px) {
+  .admin-user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .admin-user-name {
+    font-size: 0.75rem;
+  }
+
+  .admin-user-email {
+    font-size: 0.6rem;
+  }
+
+  .user-action-btn {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.25rem;
+  }
+
+  .user-action-btn svg {
+    font-size: 0.55rem;
+  }
+
+  .admin-users-grid {
+    padding: 0.4rem;
+    gap: 0.4rem;
+    max-height: 400px;
+  }
+
+  .admin-user-card {
+    padding: 0.5rem;
+  }
+}

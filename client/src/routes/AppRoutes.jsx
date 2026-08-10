@@ -12,6 +12,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminProjects from "../pages/admin/AdminProjects";
 import AdminTasks from "../pages/admin/AdminTasks";
 import AdminUsers from "../pages/admin/AdminUsers";
+import UserDetails from "../pages/admin/UserDetails";
 
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import ManagerProjects from "../pages/manager/ManagerProjects";
@@ -44,6 +45,7 @@ const AppRoutes = () => {
             <Route path="/admin/projects" element={<AdminProjects />} />
             <Route path="/admin/tasks" element={<AdminTasks />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/users/:userId" element={<UserDetails />}/>
             <Route path="/admin/notifications" element={<Notifications />} />
             <Route path="/admin/profile" element={<Profile />} />
           </Route>
