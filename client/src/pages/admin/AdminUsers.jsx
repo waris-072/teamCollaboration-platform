@@ -10,7 +10,7 @@ import {
 import useAuth from "../../hooks/useAuth";
 import { getUsers, updateUserRole, updateUserStatus } from "../../services/userService";
 import UserForm from "../../components/users/UserForm";
-import Loader from "../../components/loader/Loader"; // Import existing Loader
+import Loader from "../../components/loader/Loader";
 
 import "./Admin-styling/AdminUsers.css";
 
@@ -24,7 +24,7 @@ function AdminUsers() {
   const [error, setError] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // For actual search
+  const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -48,15 +48,31 @@ function AdminUsers() {
     }
   };
 
-
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  // Sort users: Admins on top, then active users, then inactive users
+  const sortedUsers = useMemo(() => {
+    return [...users].sort((a, b) => {
+      // Admins always on top
+      if (a.role === 'admin' && b.role !== 'admin') return -1;
+      if (b.role === 'admin' && a.role !== 'admin') return 1;
+      
+      // If both are admins or both are non-admins, sort by active status
+      // Active users come before inactive users
+      if (a.isActive && !b.isActive) return -1;
+      if (!a.isActive && b.isActive) return 1;
+      
+      // If same role and same status, maintain original order
+      return 0;
+    });
+  }, [users]);
+
   const filteredUsers = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
 
-    return users.filter((user) => {
+    return sortedUsers.filter((user) => {
       const matchesSearch =
         !normalizedSearch ||
         user.name?.toLowerCase().includes(normalizedSearch) ||
@@ -70,13 +86,12 @@ function AdminUsers() {
 
       return ( matchesSearch && matchesRole && matchesStatus);
     });
-  }, [ users, searchQuery, roleFilter, statusFilter,]);
+  }, [ sortedUsers, searchQuery, roleFilter, statusFilter,]);
 
   const hasActiveFilters =
     searchQuery !== "" ||
     roleFilter !== "all" ||
     statusFilter !== "all";
-
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -112,7 +127,7 @@ function AdminUsers() {
 
   const handleUserCreated = (createdUser) => {
     if (createdUser) {
-      setUsers((previousUsers) => [createdUser, ...previousUsers,]);
+      setUsers((previousUsers) => [createdUser, ...previousUsers]);
     }
 
     setShowMobileForm(false);
@@ -175,11 +190,22 @@ function AdminUsers() {
     try {
       const data = await updateUserStatus(selectedUser._id, newStatus);
 
-      setUsers((previousUsers) =>
-        previousUsers.map((user) =>
-          user._id === selectedUser._id ? data.user : user
-        )
-      );
+      // Find the user and update their status
+      const updatedUser = data.user;
+      
+      // Update the users state with the new data
+      setUsers((previousUsers) => {
+        // Find the index of the user being updated
+        const userIndex = previousUsers.findIndex(u => u._id === selectedUser._id);
+        
+        if (userIndex === -1) return previousUsers;
+        
+        // Create new array with updated user
+        const newUsers = [...previousUsers];
+        newUsers[userIndex] = updatedUser;
+        
+        return newUsers;
+      });
     } catch (error) {
       alert(error?.response?.data?.message || `Unable to ${action} user.`);
     }
@@ -311,7 +337,6 @@ function AdminUsers() {
         </div>
       )}
 
-
       {/* Main Layout */}
       <div className="admin-users-layout">
 
@@ -398,7 +423,6 @@ function AdminUsers() {
                     <span className="admin-user-email">{user.email}</span>
 
                     <div className="admin-user-meta">
-                      
                       <span
                         className={`user-status-badge ${
                           user.isActive
@@ -479,7 +503,6 @@ function AdminUsers() {
           </div>
         </div>
       </div>
-
 
       {/* Mobile Create User Modal */}
       {showMobileForm && (
