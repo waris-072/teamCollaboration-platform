@@ -51,6 +51,38 @@ async function validateMembers(memberIds = []) {
     return uniqueMembers;
 }
 
+async function validateMemberAvailability(memberIds, excludeProjectId) {
+    const uniqueMembers = [...new Set(
+        memberIds.map((id) => id.toString())
+    )];
+
+    if (!uniqueMembers.length) {
+        return;
+    }
+
+    const filter = {
+        members: { $in: uniqueMembers },
+    };
+
+    if (excludeProjectId) {
+        filter._id = { $ne: excludeProjectId };
+    }
+
+    const conflictingProject = await Project.findOne(filter)
+        .populate("members", "name");
+
+    if (!conflictingProject) {
+        return;
+    }
+
+    const conflictingMember = conflictingProject.members.find((member) =>
+        uniqueMembers.includes(member._id.toString())
+    );
+
+    throw new Error(
+        `${conflictingMember?.name || "A selected member"} is already assigned to another project.`
+    );
+}
 
 
 //Create Project
@@ -63,11 +95,9 @@ export async function createProjectService(data, adminId) {
         priority,
         status,
         manager,
-        members = [],
     } = data;
 
     await validateManager(manager);
-    const uniqueMembers = await validateMembers(members);
 
     const project = await Project.create({
         title,
@@ -77,7 +107,6 @@ export async function createProjectService(data, adminId) {
         priority,
         status,
         manager,
-        members: uniqueMembers,
         createdBy: adminId,
     });
 
@@ -154,24 +183,13 @@ export async function updateProjectService(projectId, data, user) {
         throw new Error("Project not found.");
     }
 
-    if (user.role === "member") {
-        throw new Error("You are not allowed to update projects.");
-    }
-
-    if (
-        user.role === "manager" &&
-        project.manager.toString() !== user._id.toString()
-    ) {
-        throw new Error("You can only update your own projects.");
+    if (user.role !== "admin") {
+        throw new Error("Only admins can edit projects.");
     }
 
     if (data.manager !== undefined) {
         await validateManager(data.manager);
         project.manager = data.manager;
-    }
-
-    if (data.members !== undefined) {
-        project.members = await validateMembers(data.members);
     }
 
     if (data.title !== undefined) {
@@ -328,88 +346,87 @@ export async function deleteProjectService(projectId,user) {
     return;
 }
 
-// Add Project Members Service
-export async function addProjectMembersService(projectId,memberIds,user) {
-  const project = await Project.findById(projectId);
-
-  if (!project) {
-    throw new Error("Project not found.");
-  }
-
-  if (
-    user.role === "manager" &&
-    project.manager.toString() !== user._id.toString()
-  ) {
-    throw new Error("You can only manage your own projects.");
-  }
-
-  const validMembers = await validateMembers(memberIds);
-
-  const updatedMembers = [
-    ...new Set([
-      ...project.members.map(id => id.toString()),
-      ...validMembers.map(id => id.toString()),
-    ]),
-  ];
-
-  project.members = updatedMembers;
-
-  await project.save();
-
-  return await Project.findById(project._id)
-    .populate("manager", "name email role")
-    .populate("members", "name email role")
-    .populate("createdBy", "name email role");
-}
-
-// Remove Project Members Service
-export async function removeProjectMembersService(projectId,memberIds,user) {
+//Add/Remove Members
+export async function updateProjectMembersService(projectId, memberIds, user) {
     const project = await Project.findById(projectId);
 
     if (!project) {
         throw new Error("Project not found.");
     }
 
-    if (user.role !== "admin" && user.role !== "manager" ) {
-        throw new Error( "You are not authorized to manage project members." );
+    if (user.role !== "manager") {
+        throw new Error("Only project managers can manage project members.");
     }
 
     if (
-        user.role === "manager" &&
         project.manager.toString() !==
-            user._id.toString()
+        user._id.toString()
     ) {
         throw new Error("You can only manage members of your own projects.");
     }
 
-    if (!Array.isArray(memberIds) || !memberIds.length) {
-        throw new Error("Member IDs are required.");
+    if (!Array.isArray(memberIds)) {
+        throw new Error("Members must be provided as an array.");
     }
 
-    const membersToRemove = new Set(memberIds.map((id) => id.toString()));
+    const uniqueMemberIds = [...new Set(
+        memberIds.map((id) => id.toString())
+    ),];
 
-    const projectMemberIds = new Set(
-        project.members.map((id) =>
-            id.toString()
-        )
-    );
-
-    for (const memberId of membersToRemove) {
-        if (!projectMemberIds.has(memberId)) {
-            throw new Error(
-                "One or more users are not members of this project."
-            );
-        }
-    }
-
-    project.members = project.members.filter(
-        (memberId) => !membersToRemove.has(memberId.toString())
-    );
+    const validMembers = await validateMembers(uniqueMemberIds);
+    await validateMemberAvailability(validMembers, project._id);
+    project.members = validMembers;
 
     await project.save();
 
     return await Project.findById(project._id)
-        .populate( "manager", "name email role" )
-        .populate("members","name email role")
-        .populate("createdBy","name email role");
+        .populate("manager", "name email role")
+        .populate("members", "name email role")
+        .populate("createdBy", "name email role");
+}
+
+// Get members available for assignment to a project
+export async function getAvailableMembersService(projectId, user) {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new Error("Project not found.");
+    }
+
+    if (user.role !== "manager" || project.manager.toString() !== user._id.toString()) {
+        throw new Error("Only the project manager can manage project members.");
+    }
+
+    const members = await User.find({role: "member", isActive: true,})
+        .select("name email role").sort({ name: 1 });
+
+    const projects = await Project.find({
+        members: { $exists: true, $ne: [] },
+    }).select("_id members");
+
+    const currentProjectMemberIds = new Set(
+        project.members.map((id) => id.toString())
+    );
+
+    const assignedToOtherProjectIds = new Set();
+
+    for (const otherProject of projects) {
+        if (otherProject._id.toString() === projectId.toString()){
+            continue;
+        }
+
+        for (const memberId of otherProject.members) {
+            assignedToOtherProjectIds.add(memberId.toString());
+        }
+    }
+
+    return members.filter((member) => {
+        const memberId = member._id.toString();
+
+        if (currentProjectMemberIds.has(memberId)) {
+            return true;
+        }
+
+        return !assignedToOtherProjectIds.has(memberId);
+    });
 }

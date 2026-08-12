@@ -87,4 +87,36 @@
   --member-primary: #059669;
   --member-primary-dark: #047857;
   --member-primary-light: #ecfdf5;
+
+  /* ================================
+  Project Status Colors
+  ================================ */
+
+  /* Planning - Amber */
+  --status-planning: #f59e0b;
+  --status-planning-light: #fef3c7;
+  --status-planning-dark: #d97706;
+  --shadow-color-planning: rgba(245, 158, 11, 0.25);
+  --border-color-planning: #f59e0b;
+
+  /* Active - Green */
+  --status-active: #16a34a;
+  --status-active-light: #dcfce7;
+  --status-active-dark: #15803d;
+  --shadow-color-active: rgba(22, 163, 74, 0.25);
+  --border-color-active: #16a34a;
+
+  /* Completed - Blue */
+  --status-completed: #2563eb;
+  --status-completed-light: #dbeafe;
+  --status-completed-dark: #1d4ed8;
+  --shadow-color-completed: rgba(37, 99, 235, 0.25);
+  --border-color-completed: #2563eb;
+
+  /* Cancelled - Red */
+  --status-cancelled: #dc2626;
+  --status-cancelled-light: #fee2e2;
+  --status-cancelled-dark: #b91c1c;
+  --shadow-color-cancelled: rgba(220, 38, 38, 0.25);
+  --border-color-cancelled: #dc2626;
 }

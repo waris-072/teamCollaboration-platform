@@ -15,7 +15,6 @@ function Topbar() {
     if (path.includes("/dashboard")) {
       return {
         title: "Dashboard",
-        placeholder: "Search dashboard...",
         searchable: false,
       };
     }
@@ -23,7 +22,6 @@ function Topbar() {
     if (path.includes("/users")) {
       return {
         title: "Users",
-        placeholder: "Search users...",
         searchable: true,
       };
     }
@@ -31,7 +29,6 @@ function Topbar() {
     if (path.includes("/members")) {
       return {
         title: "Members",
-        placeholder: "Search members...",
         searchable: true,
       };
     }
@@ -39,7 +36,6 @@ function Topbar() {
     if (path.includes("/projects")) {
       return {
         title: "Projects",
-        placeholder: "Search projects...",
         searchable: true,
       };
     }
@@ -47,7 +43,6 @@ function Topbar() {
     if (path.includes("/tasks")) {
       return {
         title: "Tasks",
-        placeholder: "Search tasks...",
         searchable: true,
       };
     }
@@ -55,7 +50,6 @@ function Topbar() {
     if (path.includes("/notifications")) {
       return {
         title: "Notifications",
-        placeholder: "Search notifications...",
         searchable: true,
       };
     }
@@ -70,7 +64,6 @@ function Topbar() {
 
     return {
       title: "TeamFlow",
-      placeholder: "Search...",
       searchable: false,
     };
   };
@@ -113,16 +106,7 @@ function Topbar() {
           <h1>{pageConfig.title}</h1>
         </div>
 
-        {pageConfig.searchable && (
-          <div className="topbar-search">
-            <FaSearch />
-            <input
-              type="text"
-              placeholder={pageConfig.placeholder}
-              aria-label={pageConfig.placeholder}
-            />
-          </div>
-        )}
+        
       </div>
 
       <div className="topbar-right">

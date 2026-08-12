@@ -8,6 +8,8 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
 
+import ProjectDetails from "../components/project/ProjectDetails";
+
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminProjects from "../pages/admin/AdminProjects";
 import AdminTasks from "../pages/admin/AdminTasks";
@@ -43,6 +45,10 @@ const AppRoutes = () => {
           <Route element={<RoleRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/projects" element={<AdminProjects />} />
+            <Route 
+              path="/admin/projects/:projectId" 
+              element={<ProjectDetails />} 
+            />
             <Route path="/admin/tasks" element={<AdminTasks />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/users/:userId" element={<UserDetails />}/>
@@ -55,6 +61,10 @@ const AppRoutes = () => {
           <Route element={<RoleRoute allowedRoles={["manager"]} />}>
             <Route path="/manager/dashboard" element={<ManagerDashboard />} />
             <Route path="/manager/projects" element={<ManagerProjects />} />
+             <Route 
+              path="/manager/projects/:projectId" 
+              element={<ProjectDetails />} 
+            />
             <Route path="/manager/tasks" element={<ManagerTasks />} />
             <Route path="/manager/members" element={<ManagerMembers />} />
             <Route path="/manager/notifications" element={<Notifications />} />

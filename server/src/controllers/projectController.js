@@ -1,5 +1,5 @@
 import { validateCreateProject } from "../validators/projectValidators.js";
-import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, updateProjectStatusService, deleteProjectService, addProjectMembersService, removeProjectMembersService } from "../services/projectService.js";
+import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, updateProjectStatusService, deleteProjectService, updateProjectMembersService, getAvailableMembersService } from "../services/projectService.js";
 
 export async function createProjectController(req, res) {
   try {
@@ -125,9 +125,9 @@ export async function deleteProjectController(req, res) {
   }
 }
 
-export async function addProjectMembersController(req, res) {
+export async function updateProjectMembersController(req, res) {
   try {
-    const project = await addProjectMembersService(
+    const project = await updateProjectMembersService(
       req.params.projectId,
       req.body.members,
       req.user
@@ -135,7 +135,7 @@ export async function addProjectMembersController(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: "Members added successfully.",
+      message: "Project members updated successfully.",
       project,
     });
   } catch (error) {
@@ -146,21 +146,16 @@ export async function addProjectMembersController(req, res) {
   }
 }
 
-export async function removeProjectMembersController(req, res) {
+export async function getAvailableMembersController(req, res) {
   try {
-    const { projectId } = req.params;
-    const { memberIds } = req.body;
+    const members = await getAvailableMembersService(
+        req.params.projectId,
+        req.user
+      );
 
-    const project = await removeProjectMembersService(
-      projectId,
-      memberIds,
-      req.user
-    );
     return res.status(200).json({
       success: true,
-      message:
-        "Project members removed successfully.",
-      data: project,
+      members,
     });
   } catch (error) {
     return res.status(400).json({
@@ -169,3 +164,4 @@ export async function removeProjectMembersController(req, res) {
     });
   }
 }
+
