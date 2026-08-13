@@ -9,6 +9,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
 
 import ProjectDetails from "../components/project/ProjectDetails";
+import TaskDetails from "../components/task/TaskDetails";
 
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminProjects from "../pages/admin/AdminProjects";
@@ -50,6 +51,7 @@ const AppRoutes = () => {
               element={<ProjectDetails />} 
             />
             <Route path="/admin/tasks" element={<AdminTasks />} />
+            <Route path="/admin/tasks/:taskId" element={<TaskDetails />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/users/:userId" element={<UserDetails />}/>
             <Route path="/admin/notifications" element={<Notifications />} />
@@ -66,6 +68,7 @@ const AppRoutes = () => {
               element={<ProjectDetails />} 
             />
             <Route path="/manager/tasks" element={<ManagerTasks />} />
+            <Route path="/manager/tasks/:taskId" element={<TaskDetails />} />
             <Route path="/manager/members" element={<ManagerMembers />} />
             <Route path="/manager/notifications" element={<Notifications />} />
             <Route path="/manager/profile" element={<Profile />} />
@@ -76,6 +79,7 @@ const AppRoutes = () => {
           <Route element={<RoleRoute allowedRoles={["member"]} />}>
             <Route path="/member/dashboard" element={<MemberDashboard />} />
             <Route path="/member/tasks" element={<MemberTasks />} />
+            <Route path="/member/tasks/:taskId" element={<TaskDetails />} />
             <Route path="/member/notifications" element={<Notifications />} />
             <Route path="/member/profile" element={<Profile />} />
           </Route>

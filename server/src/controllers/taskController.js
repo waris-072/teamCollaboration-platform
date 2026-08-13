@@ -1,4 +1,4 @@
-import { createTaskService, getTasksService, getTaskByIdService, updateTaskService, updateTaskStatusService, archiveTaskService } from "../services/taskService.js";
+import { createTaskService, getTasksService, getTaskByIdService, updateTaskService, updateTaskStatusService, deleteTaskService } from "../services/taskService.js";
 
 
 export async function createTaskController(req, res) {
@@ -95,22 +95,22 @@ export async function updateTaskStatusController(req,res) {
     }
 }
 
-// Archive Task Controller
-export async function archiveTaskController(req, res) {
+// Delete Task
+export async function deleteTaskController(req, res) {
     try {
-        const task = await archiveTaskService(
-            req.params.taskId,
+        const { taskId } = req.params;
+
+        const result = await deleteTaskService(
+            taskId,
             req.user
         );
-        res.status(200).json({
-            success: true,
-            message: "Task archived successfully.",
-            task,
-        });
+
+        return res.status(200).json(result);
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
+        return res.status(400).json({
+            message:
+                error.message ||
+                "Unable to delete task.",
         });
     }
 }

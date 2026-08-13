@@ -76,8 +76,8 @@ export async function createTaskService(data, currentUser) {
         dueDate,
     } = data;
 
-    if (currentUser.role === "member") {
-        throw new Error("You are not authorized to create tasks.");
+    if (currentUser.role !== "manager") {
+        throw new Error("Only project managers can create tasks.");
     }
 
     const projectDoc = await validateProject(project, currentUser);
@@ -117,9 +117,7 @@ export async function createTaskService(data, currentUser) {
 
 // Get All Tasks Service
 export async function getTasksService(currentUser) {
-    let filter = {
-        isArchived: false
-    };
+    let filter = {};
 
     if (currentUser.role === "manager") {
         const projects = await Project.find({
@@ -153,16 +151,12 @@ export async function getTaskByIdService(taskId, currentUser) {
     }
 
     const task = await Task.findById(taskId)
-        .populate("project", "title status manager members")
+        .populate("project", "title status manager members startDate endDate")
         .populate("assignedTo", "name email role")
         .populate("createdBy", "name email role");
 
     if (!task) {
         throw new Error("Task not found.");
-    }
-
-    if (task.isArchived) {
-        throw new Error("Task has been archived.");
     }
 
     if (currentUser.role === "admin") {
@@ -199,12 +193,9 @@ export async function updateTaskService(taskId, data, currentUser) {
     }
     const previousAssignee = task.assignedTo.toString();
 
-    if (task.isArchived) {
-        throw new Error("Task has been archived.");
-    }
 
-    if (currentUser.role === "member") {
-        throw new Error("You are not authorized to update tasks.");
+    if (currentUser.role !== "manager") {
+        throw new Error("Only project managers can update tasks.");
     }
 
     const project = await Project.findById(task.project);
@@ -283,18 +274,11 @@ export async function updateTaskService(taskId, data, currentUser) {
 }
 
 // Update Task Status Service
-// ======================================
-// Update Task Status
-// ======================================
 export async function updateTaskStatusService(taskId,status,currentUser) {
     const task = await Task.findById(taskId);
 
     if (!task) {
         throw new Error("Task not found.");
-    }
-
-    if (task.isArchived) {
-        throw new Error("Archived tasks cannot be updated.");
     }
 
     const allowedStatus = ["todo","in-progress","review","completed",];
@@ -305,31 +289,6 @@ export async function updateTaskStatusService(taskId,status,currentUser) {
     const previousStatus = task.status;
 
     if (previousStatus === status) {
-        return await Task.findById(task._id)
-            .populate("project", "title status")
-            .populate("assignedTo", "name email role")
-            .populate("createdBy", "name email role");
-    }
-
-    if (currentUser.role === "admin") {
-        task.status = status;
-        await task.save();
-
-        try {
-            await createNotificationService({
-                recipient: task.assignedTo,
-                sender: currentUser._id,
-                title: "Task Status Updated",
-                message: `The status of "${task.title}" was changed from "${previousStatus}" to "${status}".`,
-                type: "task_updated",
-            });
-        } catch (error) {
-            console.error(
-                "Task status notification failed:",
-                error.message
-            );
-        }
-
         return await Task.findById(task._id)
             .populate("project", "title status")
             .populate("assignedTo", "name email role")
@@ -382,26 +341,12 @@ export async function updateTaskStatusService(taskId,status,currentUser) {
     throw new Error("You are not authorized to update task status.");
 }
 
-// Archive/Soft-Delete Task Service
-export async function archiveTaskService(taskId, currentUser) {
+// Delete Task Service
+export async function deleteTaskService(taskId, currentUser) {
     const task = await Task.findById(taskId);
 
     if (!task) {
         throw new Error("Task not found.");
-    }
-
-    if (task.isArchived) {
-        throw new Error("Task is already archived.");
-    }
-
-    if (currentUser.role === "admin") {
-        task.isArchived = true;
-
-        await task.save();
-        return await Task.findById(task._id)
-            .populate("project", "title status")
-            .populate("assignedTo", "name email role")
-            .populate("createdBy", "name email role");
     }
 
     if (currentUser.role === "manager") {
@@ -415,16 +360,20 @@ export async function archiveTaskService(taskId, currentUser) {
             project.manager.toString() !==
             currentUser._id.toString()
         ) {
-            throw new Error("You can only archive tasks in your own projects.");
+            throw new Error(
+                "You can only delete tasks in your own projects."
+            );
         }
 
-        task.isArchived = true;
-        await task.save();
-        return await Task.findById(task._id)
-            .populate("project", "title status")
-            .populate("assignedTo", "name email role")
-            .populate("createdBy", "name email role");
+        await Task.findByIdAndDelete(task._id);
+
+        return {
+            message: "Task deleted successfully.",
+            taskId: task._id,
+        };
     }
 
-    throw new Error("You are not authorized to archive tasks.");
+    throw new Error(
+        "You are not authorized to delete tasks."
+    );
 }

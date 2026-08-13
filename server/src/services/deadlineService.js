@@ -21,7 +21,6 @@ export async function checkUpcomingDeadlines() {
         status: {
             $ne: "completed",
         },
-        isArchived: false,
     }).select(
         "_id title assignedTo dueDate"
     );

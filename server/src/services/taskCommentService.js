@@ -11,10 +11,6 @@ async function validateTaskAccess(taskId, currentUser) {
         throw new Error("Task not found.");
     }
 
-    if (task.isArchived) {
-        throw new Error("Task has been archived.");
-    }
-
     // Admin can access any task
     if (currentUser.role === "admin") {
         return task;
@@ -72,8 +68,8 @@ export async function getTaskCommentsService(taskId, currentUser) {
     return comments;
 }
 
-// Delete Task Comment Service
-export async function deleteTaskCommentService(commentId,currentUser) {
+// Delete Task Comment Service// Delete Task Comment Service
+export async function deleteTaskCommentService(commentId, currentUser) {
     const comment = await TaskComment.findById(commentId);
 
     if (!comment) {
@@ -86,13 +82,60 @@ export async function deleteTaskCommentService(commentId,currentUser) {
     }
 
     if (
-        comment.author.toString() !==
-        currentUser._id.toString()
+        comment.author.toString() === currentUser._id.toString()
     ) {
+        await TaskComment.findByIdAndDelete(commentId);
+        return;
+    }
+
+    if (currentUser.role === "manager") {
+        const task = await Task.findById(comment.task);
+
+        if (!task) {
+            throw new Error("Task not found.");
+        }
+
+        const project = await Project.findById(task.project);
+
+        if (!project) {
+            throw new Error("Project not found.");
+        }
+
+        if (
+            project.manager.toString() !==
+            currentUser._id.toString()
+        ) {
+            throw new Error(
+                "You can only delete comments from your own projects."
+            );
+        }
+
+        // Get comment author
+        const commentAuthor = await mongoose.model("User").findById(comment.author);
+
+        if (!commentAuthor) {
+            throw new Error("Comment author not found.");
+        }
+
+        // Manager can delete member comments
+        if (commentAuthor.role === "member") {
+            await TaskComment.findByIdAndDelete(commentId);
+            return;
+        }
+
+        // Manager cannot delete another manager/admin's comment
+        throw new Error(
+            "You can only delete your own comments or comments made by members of your projects."
+        );
+    }
+
+    if (currentUser.role === "member") {
         throw new Error(
             "You can only delete your own comments."
         );
     }
-
-    await TaskComment.findByIdAndDelete(commentId);
+    
+    throw new Error(
+        "You are not authorized to delete this comment."
+    );
 }

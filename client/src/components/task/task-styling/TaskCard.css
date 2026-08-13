@@ -1,0 +1,664 @@
+/* =========================================================
+   Task Card
+   ========================================================= */
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: visible;
+  transition: all var(--transition-normal);
+  height: fit-content;
+  position: relative;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.task-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.task-card-title-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.task-card-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 1.2rem;
+  transition: all var(--transition-normal);
+}
+
+.task-card:hover .task-card-icon {
+  background: var(--color-primary);
+  color: white;
+  transform: scale(1.05) rotate(-3deg);
+}
+
+.task-card-title-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.task-card-title-content h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-normal);
+}
+
+.task-card:hover .task-card-title-content h3 {
+  color: var(--color-primary);
+}
+
+/* =========================================================
+   Badges
+   ========================================================= */
+
+.task-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.task-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.task-badge svg {
+  font-size: 0.6rem;
+}
+
+/* =========================================================
+   Status Badges
+   ========================================================= */
+
+.task-badge.task-status-todo {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.task-badge.task-status-in-progress {
+  background: var(--status-planning-light);
+  color: var(--status-planning-dark);
+}
+
+.task-badge.task-status-review {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.task-badge.task-status-completed {
+  background: var(--status-completed-light);
+  color: var(--status-completed-dark);
+}
+
+/* =========================================================
+   Priority Badges
+   ========================================================= */
+
+.task-badge.task-priority-low {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.task-badge.task-priority-medium {
+  background: var(--status-planning-light);
+  color: var(--status-planning-dark);
+}
+
+.task-badge.task-priority-high {
+  background: var(--status-cancelled-light);
+  color: var(--status-cancelled-dark);
+}
+
+/* =========================================================
+   Description
+   ========================================================= */
+
+.task-card-description {
+  padding: 0.5rem 1.25rem 0.25rem;
+  min-height: 48px;
+}
+
+.task-card-description p {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.6;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-normal);
+}
+
+.task-card:hover .task-card-description p {
+  color: var(--color-text);
+}
+
+/* =========================================================
+   Information Grid
+   ========================================================= */
+
+.task-card-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.task-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-normal);
+}
+
+.task-info-item:hover {
+  background: var(--color-bg);
+}
+
+.task-info-item > svg {
+  flex-shrink: 0;
+  width: 1rem;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  transition: transform var(--transition-normal);
+}
+
+.task-info-item:hover > svg {
+  transform: scale(1.1);
+}
+
+.task-info-item > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.task-info-label {
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.05rem;
+}
+
+.task-info-item strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   Footer - All actions in single row
+   ========================================================= */
+
+.task-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0.65rem 0.8rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+  margin-top: auto;
+  flex-wrap: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Action buttons container */
+.task-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.task-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 34px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+  flex: 1;
+}
+
+.task-card-action svg {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  transition: all var(--transition-normal);
+}
+
+/* =========================================================
+   Action Hover States
+   ========================================================= */
+
+/* View Button */
+.task-card-view:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: translateY(-2px);
+}
+
+.task-card-view:hover svg {
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+/* Edit Button */
+.task-card-edit:hover {
+  color: var(--manager-primary, #6c63ff);
+  background: var(--manager-primary-light, #e8e6ff);
+  transform: translateY(-2px);
+}
+
+.task-card-edit:hover svg {
+  color: var(--manager-primary, #6c63ff);
+  transform: scale(1.1);
+}
+
+/* Status Button */
+.task-card-status:hover {
+  color: var(--member-primary, #00b894);
+  background: var(--member-primary-light, #e0f7f1);
+  transform: translateY(-2px);
+}
+
+.task-card-status:hover svg {
+  color: var(--member-primary, #00b894);
+  transform: scale(1.1);
+}
+
+
+.task-card-delete:hover {
+  background: var(--member-primary-light, #e0f7f1);
+  color: var(--color-danger);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.task-card-delete:hover svg {
+  color: var(--color-danger);
+  transform: scale(1.1);
+}
+
+/* =========================================================
+   Status Dropdown
+   ========================================================= */
+
+.task-card-status-wrapper {
+  position: relative;
+  display: inline-block;
+  flex: 1;
+}
+
+.task-card-status-toggle {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 34px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.task-card-status-toggle:hover {
+  color: var(--member-primary, #00b894);
+  background: var(--member-primary-light, #e0f7f1);
+  transform: translateY(-2px);
+}
+
+.task-card-status-toggle:hover svg {
+  color: var(--member-primary, #00b894);
+  transform: scale(1.1);
+}
+
+.task-card-status-toggle svg {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  transition: all var(--transition-normal);
+}
+
+/* Dropdown appears ABOVE the card */
+.task-card-status-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.task-card-status-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  padding: 0.4rem 0;
+  z-index: 1001;
+  border: 1px solid var(--color-border);
+}
+
+/* If there's not enough space above, show below */
+@media (max-height: 600px) {
+  .task-card-status-menu {
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+}
+
+/* For mobile, always show below */
+@media (max-width: 480px) {
+  .task-card-status-menu {
+    bottom: auto;
+    top: calc(100% + 8px);
+    right: -10px;
+    min-width: 150px;
+  }
+}
+
+.task-card-status-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+}
+
+.task-card-status-option:hover {
+  background: var(--color-bg);
+}
+
+.task-card-status-option.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.task-card-status-option .status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.status-todo {
+  background: #ff9800;
+}
+
+.status-dot.status-in-progress {
+  background: #2196f3;
+}
+
+.status-dot.status-review {
+  background: #9c27b0;
+}
+
+.status-dot.status-completed {
+  background: #4caf50;
+}
+
+.status-check {
+  margin-left: auto;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .task-card {
+    max-width: 100%;
+  }
+
+  .task-card-info {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .task-info-item {
+    padding: 0.3rem 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .task-info-item strong {
+    font-size: 0.72rem;
+  }
+
+  .task-card-footer {
+    padding: 0.5rem 0.6rem;
+    gap: 0.2rem;
+    flex-wrap: nowrap;
+  }
+
+  .task-card-action,
+  .task-card-status-toggle {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.65rem;
+    min-height: 30px;
+  }
+
+  .task-card-status-menu {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 580px) {
+  .task-card-footer {
+    flex-wrap: wrap;
+    gap: 0.15rem;
+  }
+
+  .task-card-actions {
+    flex-wrap: wrap;
+    gap: 0.15rem;
+  }
+
+  .task-card-action,
+  .task-card-status-wrapper {
+    flex: 1 1 calc(33.33% - 0.15rem);
+    min-width: 60px;
+  }
+
+  .task-card-action span,
+  .task-card-status-toggle span {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-card-header {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .task-card-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .task-card-title-content h3 {
+    font-size: 0.85rem;
+  }
+
+  .task-badge {
+    font-size: 0.55rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .task-card-description {
+    padding: 0.25rem 0.75rem;
+    min-height: 36px;
+  }
+
+  .task-card-description p {
+    font-size: 0.72rem;
+  }
+
+  .task-card-info {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .task-info-item {
+    padding: 0.2rem 0.3rem;
+  }
+
+  .task-info-item > svg {
+    font-size: 0.7rem;
+  }
+
+  .task-info-label {
+    font-size: 0.5rem;
+  }
+
+  .task-info-item strong {
+    font-size: 0.68rem;
+  }
+
+  .task-card-footer {
+    padding: 0.35rem 0.4rem;
+    gap: 0.1rem;
+    flex-wrap: wrap;
+  }
+
+  .task-card-actions {
+    flex-wrap: wrap;
+    gap: 0.1rem;
+  }
+
+  .task-card-action,
+  .task-card-status-wrapper {
+    flex: 1 1 calc(50% - 0.1rem);
+    min-width: 50px;
+  }
+
+  .task-card-action span,
+  .task-card-status-toggle span {
+    font-size: 0;
+  }
+
+  .task-card-action {
+    padding: 0.25rem 0.3rem;
+    min-height: 28px;
+  }
+
+  .task-card-action svg,
+  .task-card-status-toggle svg {
+    font-size: 0.8rem;
+  }
+
+  .task-card-status-menu {
+    min-width: 150px;
+    right: -10px;
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+
+  .task-card-status-option {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .task-card-action,
+  .task-card-status-wrapper {
+    flex: 1 1 100%;
+  }
+
+  .task-card-status-menu {
+    min-width: 140px;
+    right: -5px;
+  }
+}
