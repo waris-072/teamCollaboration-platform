@@ -22,7 +22,9 @@ import {
 } from "react-icons/fa";
 
 import { getUserById } from "../../services/userService";
-import Loader from "../../components/loader/Loader"; // Import existing Loader
+import { getProjects } from "../../services/projectService";
+import { getTasks } from "../../services/taskService";
+import Loader from "../../components/loader/Loader";
 
 import "./Admin-styling/UserDetails.css";
 
@@ -37,6 +39,10 @@ function UserDetails() {
   const [loading, setLoading] = useState(true);
   const [relatedLoading, setRelatedLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // =====================================================
+  // Fetch User Details
+  // =====================================================
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,6 +66,10 @@ function UserDetails() {
     }
   }, [userId]);
 
+  // =====================================================
+  // Fetch Related Data (Projects, Tasks, Team Members)
+  // =====================================================
+
   useEffect(() => {
     if (!user) {
       return;
@@ -68,9 +78,98 @@ function UserDetails() {
     const fetchRelatedData = async () => {
       try {
         setRelatedLoading(true);
-        setProjects([]);
-        setTasks([]);
-        setTeamMembers([]);
+
+        // Fetch all projects and tasks
+        const [projectsResponse, tasksResponse] = await Promise.all([
+          getProjects(),
+          getTasks(),
+        ]);
+
+        const allProjects = projectsResponse?.projects || [];
+        const allTasks = tasksResponse?.tasks || [];
+
+        // Filter projects based on user role
+        let userProjects = [];
+        let userTasks = [];
+        let userTeamMembers = [];
+
+        if (user.role === "admin") {
+          // Admin: Get all projects and tasks
+          userProjects = allProjects;
+          userTasks = allTasks;
+          
+          // Admin doesn't have team members in the same way
+          userTeamMembers = [];
+          
+        } else if (user.role === "manager") {
+          // Manager: Get projects where they are the manager
+          userProjects = allProjects.filter(
+            (project) => project.manager?._id === user._id || project.manager === user._id
+          );
+          
+          // Get tasks for those projects
+          const projectIds = userProjects.map((p) => p._id);
+          userTasks = allTasks.filter(
+            (task) => projectIds.includes(task.project?._id) || projectIds.includes(task.project)
+          );
+          
+          // Get team members (members of the manager's projects)
+          const memberIds = new Set();
+          userProjects.forEach((project) => {
+            (project.members || []).forEach((member) => {
+              const memberId = member._id || member;
+              if (memberId.toString() !== user._id.toString()) {
+                memberIds.add(memberId.toString());
+              }
+            });
+          });
+          
+          // Get full member details from projects
+          const memberMap = new Map();
+          userProjects.forEach((project) => {
+            (project.members || []).forEach((member) => {
+              if (member._id && member._id.toString() !== user._id.toString()) {
+                if (!memberMap.has(member._id.toString())) {
+                  memberMap.set(member._id.toString(), member);
+                }
+              }
+            });
+          });
+          userTeamMembers = Array.from(memberMap.values());
+          
+        } else if (user.role === "member") {
+          // Member: Get projects they are a member of
+          userProjects = allProjects.filter(
+            (project) => {
+              const members = project.members || [];
+              return members.some(
+                (member) => member._id === user._id || member === user._id
+              );
+            }
+          );
+          
+          // Get tasks assigned to the member
+          userTasks = allTasks.filter(
+            (task) => task.assignedTo?._id === user._id || task.assignedTo === user._id
+          );
+          
+          // Get the member's manager (from their projects)
+          const managerMap = new Map();
+          userProjects.forEach((project) => {
+            if (project.manager) {
+              const managerId = project.manager._id || project.manager;
+              if (!managerMap.has(managerId)) {
+                managerMap.set(managerId, project.manager);
+              }
+            }
+          });
+          userTeamMembers = Array.from(managerMap.values());
+        }
+
+        setProjects(userProjects);
+        setTasks(userTasks);
+        setTeamMembers(userTeamMembers);
+
       } catch (error) {
         console.error(
           "Failed to load related user information:",
@@ -83,6 +182,10 @@ function UserDetails() {
 
     fetchRelatedData();
   }, [user]);
+
+  // =====================================================
+  // Helper Functions
+  // =====================================================
 
   const formatDate = (date) => {
     if (!date) {
@@ -147,10 +250,27 @@ function UserDetails() {
       'completed': '#3b82f6',
       'pending': '#f59e0b',
       'inactive': '#ef4444',
-      'in progress': '#8b5cf6'
+      'in progress': '#8b5cf6',
+      'planning': '#f59e0b',
+      'cancelled': '#ef4444',
+      'todo': '#f59e0b',
+      'in-progress': '#3b82f6',
+      'review': '#8b5cf6',
     };
     return colors[status?.toLowerCase()] || '#94a3b8';
   };
+
+  const getStatusLabel = (status) => {
+    if (!status) return "Active";
+    return status
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  // =====================================================
+  // Loading & Error States
+  // =====================================================
 
   if (loading) {
     return (
@@ -178,6 +298,10 @@ function UserDetails() {
       </div>
     );
   }
+
+  // =====================================================
+  // Render
+  // =====================================================
 
   return (
     <div className="admin-users-page">
@@ -303,6 +427,7 @@ function UserDetails() {
               </div>
               <div>
                 <h3>Manager</h3>
+                <span className="item-count">{teamMembers.length}</span>
               </div>
             </div>
             <div className="dashboard-card-body scrollable-content">
@@ -354,14 +479,17 @@ function UserDetails() {
             ) : (
               <div className="scrollable-items">
                 {projects.map((project) => (
-                  <div key={project._id} className="scrollable-item">
+                  <div key={project._id} className="scrollable-item project-item">
                     <div className="item-details">
                       <span className="item-name">{project.title}</span>
                       <span 
                         className="item-status"
-                        style={{ backgroundColor: getStatusColor(project.status) }}
+                        style={{ 
+                          backgroundColor: getStatusColor(project.status) + "20",
+                          color: getStatusColor(project.status)
+                        }}
                       >
-                        {project.status || "Active"}
+                        {getStatusLabel(project.status)}
                       </span>
                     </div>
                   </div>
@@ -393,15 +521,26 @@ function UserDetails() {
             ) : (
               <div className="scrollable-items">
                 {tasks.map((task) => (
-                  <div key={task._id} className="scrollable-item">
+                  <div key={task._id} className="scrollable-item task-item">
                     <div className="item-details">
                       <span className="item-name">{task.title}</span>
-                      <span 
-                        className="item-status"
-                        style={{ backgroundColor: getStatusColor(task.status) }}
-                      >
-                        {task.status || "Pending"}
-                      </span>
+                      <div className="item-meta">
+                        <span 
+                          className="item-status"
+                          style={{ 
+                            backgroundColor: getStatusColor(task.status) + "20",
+                            color: getStatusColor(task.status)
+                          }}
+                        >
+                          {getStatusLabel(task.status)}
+                        </span>
+                        {task.project?.title && (
+                          <span className="item-project">
+                            <FaFolderOpen className="item-project-icon" />
+                            {task.project.title}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
