@@ -1,23 +1,6 @@
-import {registerService, loginService, updateProfileService} from "../services/authService.js";
+import {loginService, updateProfileService} from "../services/authService.js";
 import cookieOptions from "../utils/cookieOptions.js";
 
-export const registerController = async (req, res) => {
-  try {
-    const { confirmPassword, ...userData } = req.body;
-    const { user, token } = await registerService(userData);
-
-    res.status(201).cookie("token", token, cookieOptions).json({
-        success: true,
-        message: "User registered successfully",
-        user,
-      });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 export const loginController = async (req, res) => {
   try {

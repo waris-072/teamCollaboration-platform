@@ -2,40 +2,6 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 
-export const registerService = async (userData) => {
-  const { name, email, password, phone, address } = userData;
-
-  const existingUser = await User.findOne({ email });
-
-  if (existingUser) {
-    throw new Error("Email already exists");
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-    phone,
-    address,
-    role: "customer",
-  });
-
-  const token = generateToken(user._id, user.role);
-  user.password = undefined; // this excludes password from the response
-
-  return {
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-    token,
-  };
-};
-
 
 export const loginService = async ({ email, password }) => {
   const user = await User.findOne({ email }).select("+password");
@@ -49,12 +15,21 @@ export const loginService = async ({ email, password }) => {
   if (!isPasswordMatched) {
     throw new Error("Invalid email or password");
   }
+  
+  if (!user.isActive) {
+    throw new Error("Your account is inactive. Please contact an administrator.");
+  }
 
-  user.password = undefined;
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { lastLogin: new Date() },
+    { new: true } // Return the updated document
+  ).select("-password");
+
   const token = generateToken(user._id, user.role);
 
   return {
-    user,
+    user: updatedUser,
     token,
   };
 };
