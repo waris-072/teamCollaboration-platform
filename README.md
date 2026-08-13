@@ -4,6 +4,8 @@ TeamFlow is a full-stack **MERN-based project management and team collaboration 
 
 The platform provides separate capabilities for **Admins, Managers, and Members**, with backend-enforced authorization to ensure that every role can access and modify only the resources they are permitted to use.
 
+Live: https://teamsflow.netlify.app/  
+
 ---
 
 ## ✨ Features
