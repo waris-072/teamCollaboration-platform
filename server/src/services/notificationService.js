@@ -2,9 +2,18 @@ import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import { getIO } from "../config/socket.js";
 
-// Create a new notification and send it to the recipient in real-time
 export async function createNotificationService(data) {
-    const {recipient, sender, title, message, type} = data;
+    const {
+        recipient,
+        sender = null,
+        title,
+        message,
+        type,
+    } = data;
+
+    // -------------------------------------------------
+    // Validate recipient
+    // -------------------------------------------------
 
     const recipientUser = await User.findById(recipient);
 
@@ -13,24 +22,65 @@ export async function createNotificationService(data) {
     }
 
     if (!recipientUser.isActive) {
-        throw new Error("Cannot notify an inactive user.");
+        throw new Error(
+            "Cannot notify an inactive user."
+        );
     }
 
-    const senderUser = await User.findById(sender);
+    // -------------------------------------------------
+    // Validate sender only when provided
+    // -------------------------------------------------
 
-    if (!senderUser) {
-        throw new Error("Notification sender not found.");
+    if (sender) {
+        const senderUser =
+            await User.findById(sender);
+
+        if (!senderUser) {
+            throw new Error(
+                "Notification sender not found."
+            );
+        }
     }
 
-    const notification = 
-        await Notification.create({recipient, sender, title, message, type});
+    // -------------------------------------------------
+    // Create notification
+    // -------------------------------------------------
 
-    const populatedNotification = await Notification.findById(notification._id)
-        .populate("recipient","name email role")
-        .populate("sender","name email role");
+    const notification =
+        await Notification.create({
+            recipient,
+            sender,
+            title,
+            message,
+            type,
+        });
+
+    // -------------------------------------------------
+    // Populate notification
+    // -------------------------------------------------
+
+    const populatedNotification =
+        await Notification.findById(
+            notification._id
+        )
+            .populate(
+                "recipient",
+                "name email role"
+            )
+            .populate(
+                "sender",
+                "name email role"
+            );
+
+    // -------------------------------------------------
+    // Send real-time notification
+    // -------------------------------------------------
 
     const io = getIO();
-    io.to(`user:${recipientUser._id.toString()}`).emit(
+
+    io.to(
+        `user:${recipientUser._id.toString()}`
+    ).emit(
         "notification",
         populatedNotification
     );
@@ -38,37 +88,81 @@ export async function createNotificationService(data) {
     return populatedNotification;
 }
 
-// Get notifications for the current user
-export async function getMyNotificationsService(currentUser) {
-    const notifications = await Notification.find({
-        recipient: currentUser._id,
-    })
-        .populate("recipient", "name email role")
-        .populate("sender", "name email role")
-        .sort({ createdAt: -1 });
+
+// =====================================================
+// Get Current User Notifications
+// =====================================================
+
+export async function getMyNotificationsService(
+    currentUser
+) {
+    const notifications =
+        await Notification.find({
+            recipient: currentUser._id,
+        })
+            .populate(
+                "recipient",
+                "name email role"
+            )
+            .populate(
+                "sender",
+                "name email role"
+            )
+            .sort({
+                createdAt: -1,
+            });
 
     return notifications;
 }
 
-// Mark a notification as read for the current user
-export async function markNotificationAsReadService(notificationId,currentUser) {
-    const notification = await Notification.findById(notificationId);
+
+// =====================================================
+// Mark Notification As Read
+// =====================================================
+
+export async function markNotificationAsReadService(
+    notificationId,
+    currentUser
+) {
+    const notification =
+        await Notification.findById(
+            notificationId
+        );
+
     if (!notification) {
-        throw new Error("Notification not found.");
+        throw new Error(
+            "Notification not found."
+        );
     }
+
+    // -------------------------------------------------
+    // Ownership check
+    // -------------------------------------------------
 
     if (
         notification.recipient.toString() !==
         currentUser._id.toString()
     ) {
-        throw new Error("You can only update your own notifications.");
+        throw new Error(
+            "You can only update your own notifications."
+        );
     }
+
+    // -------------------------------------------------
+    // Already read
+    // -------------------------------------------------
 
     if (notification.isRead) {
         return notification;
     }
 
+    // -------------------------------------------------
+    // Mark as read
+    // -------------------------------------------------
+
     notification.isRead = true;
+
     await notification.save();
+
     return notification;
 }

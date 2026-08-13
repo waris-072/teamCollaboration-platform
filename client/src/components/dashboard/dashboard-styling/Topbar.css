@@ -267,3 +267,133 @@
     display: none;
   }
 }
+
+
+
+/* =====================================================
+   Notification Area
+===================================================== */
+
+.topbar-notification-wrapper {
+  position: relative;
+}
+
+
+/* =====================================================
+   Notification Bell
+===================================================== */
+
+.notification-button {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.notification-button:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+.notification-button:active {
+  transform: scale(0.95);
+}
+
+.notification-button svg {
+  font-size: 18px;
+}
+
+
+/* =====================================================
+   Unread Badge
+===================================================== */
+
+.notification-badge {
+  position: absolute;
+
+  top: 3px;
+  right: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 17px;
+  height: 17px;
+
+  padding: 0 4px;
+
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+
+  background: #dc2626;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+/* Hide badge when there are no unread notifications */
+
+.notification-badge.hidden {
+  display: none;
+}
+
+
+/* =====================================================
+   Bell Animation
+===================================================== */
+
+.notification-button.has-unread svg {
+  animation: notificationBellPulse 2s ease-in-out infinite;
+}
+
+@keyframes notificationBellPulse {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  10% {
+    transform: rotate(12deg);
+  }
+
+  20% {
+    transform: rotate(-12deg);
+  }
+
+  30% {
+    transform: rotate(8deg);
+  }
+
+  40% {
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    transform: rotate(0deg);
+  }
+}

@@ -1,5 +1,5 @@
 import { validateCreateProject } from "../validators/projectValidators.js";
-import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, updateProjectStatusService, deleteProjectService, updateProjectMembersService, getAvailableMembersService } from "../services/projectService.js";
+import { createProjectService, getProjectsService, getProjectByIdService, updateProjectService, updateProjectStatusService, deleteProjectService, updateProjectMembersService, getAvailableMembersService, getMyTeamService } from "../services/projectService.js";
 
 export async function createProjectController(req, res) {
   try {
@@ -165,3 +165,23 @@ export async function getAvailableMembersController(req, res) {
   }
 }
 
+// Get Manager's Team
+
+export async function getMyTeamController(req, res) {
+    try {
+        const members =
+            await getMyTeamService(req.user);
+
+        return res.status(200).json({
+            success: true,
+            count: members.length,
+            members,
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}

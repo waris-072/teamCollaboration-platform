@@ -1,57 +1,70 @@
 import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
-  {
-    recipient: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    {
+        recipient: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
 
-    sender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
+        sender: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
 
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+        title: {
+            type: String,
+            required: true,
+            trim: true,
+        },
 
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+        message: {
+            type: String,
+            required: true,
+            trim: true,
+        },
 
-    type: {
-      type: String,
-      enum: [
-        "task_assigned",
-        "task_updated",
-        "project_updated",
-        "deadline",
-      ],
-      required: true,
-    },
+        type: {
+            type: String,
+            enum: [
+                "task_assigned",
+                "task_updated",
+                "project_updated",
+                "deadline",
+            ],
+            required: true,
+        },
 
-    isRead: {
-      type: Boolean,
-      default: false,
+        isRead: {
+            type: Boolean,
+            default: false,
+        },
     },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-notificationSchema.index({ recipient: 1, isRead: 1 });
+
+// Fast unread notification lookup
+notificationSchema.index({
+    recipient: 1,
+    isRead: 1,
+});
+
+
+// Fast latest notification lookup
+notificationSchema.index({
+    recipient: 1,
+    createdAt: -1,
+});
+
 
 const Notification = mongoose.model(
-  "Notification",
-  notificationSchema
+    "Notification",
+    notificationSchema
 );
 
 export default Notification;

@@ -109,6 +109,15 @@ export async function createProjectService(data, adminId) {
         manager,
         createdBy: adminId,
     });
+    if (project.manager) {
+        await createNotificationService({
+            recipient: project.manager,
+            sender: adminId,
+            title: "Project Assigned",
+            message: `You have been assigned to project "${project.title}".`,
+            type: "project_updated",
+        });
+    }
 
     return await Project.findById(project._id)
         .populate("manager", "name email role")
@@ -429,4 +438,65 @@ export async function getAvailableMembersService(projectId, user) {
 
         return !assignedToOtherProjectIds.has(memberId);
     });
+}
+
+
+// ======================================
+// Get Manager's Team
+// ======================================
+
+export async function getMyTeamService(user) {
+    if (user.role !== "manager") {
+        throw new Error(
+            "Only managers can access their team."
+        );
+    }
+
+    const projects = await Project.find({
+        manager: user._id,
+    })
+        .populate(
+            "members",
+            "name email role isActive"
+        )
+        .select(
+            "title status members"
+        )
+        .sort({ createdAt: -1 });
+
+    const memberMap = new Map();
+
+    for (const project of projects) {
+        for (const member of project.members) {
+
+            // Ignore inactive members
+            if (!member.isActive) {
+                continue;
+            }
+
+            const memberId =
+                member._id.toString();
+
+            if (!memberMap.has(memberId)) {
+                memberMap.set(memberId, {
+                    _id: member._id,
+                    name: member.name,
+                    email: member.email,
+                    role: member.role,
+                    projects: [],
+                });
+            }
+
+            memberMap
+                .get(memberId)
+                .projects
+                .push({
+                    _id: project._id,
+                    title: project.title,
+                    status: project.status,
+                });
+        }
+    }
+
+    return Array.from(memberMap.values());
 }

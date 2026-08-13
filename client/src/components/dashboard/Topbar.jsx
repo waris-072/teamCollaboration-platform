@@ -1,11 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBell, FaSearch, FaUserCircle, FaBars } from "react-icons/fa";
-
+import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
+import NotificationPanel from "../notifications/NotificationPanel";
+import { useNotifications } from "../../context/NotificationContext";
 import "./dashboard-styling/Topbar.css";
 
 function Topbar() {
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
+  const [showNotifications, setShowNotifications] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -70,7 +74,9 @@ function Topbar() {
 
   const pageConfig = getPageConfig();
 
-  const handleNotificationClick = () => {
+  const handleViewAllNotifications = () => {
+    setShowNotifications(false);
+
     if (user?.role === "admin") {
       navigate("/admin/notifications");
     } else if (user?.role === "manager") {
@@ -105,8 +111,6 @@ function Topbar() {
         <div className="topbar-page-info">
           <h1>{pageConfig.title}</h1>
         </div>
-
-        
       </div>
 
       <div className="topbar-right">
@@ -114,11 +118,22 @@ function Topbar() {
           type="button"
           className="notification-button"
           aria-label="Notifications"
-          onClick={handleNotificationClick}
+          onClick={() => setShowNotifications((prev) => !prev)}
         >
           <FaBell />
-          <span className="notification-badge">0</span>
+          {unreadCount > 0 && (
+            <span className="notification-badge">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </button>
+
+        {showNotifications && (
+          <NotificationPanel
+            onClose={() => setShowNotifications(false)}
+            onViewAll={handleViewAllNotifications}
+          />
+        )}
 
         <button
           type="button"

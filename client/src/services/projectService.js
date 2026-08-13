@@ -48,3 +48,8 @@ export const updateProjectMembers = async (projectId, members) => {
   return response.data;
 };
 
+export const getMyTeam = async () => {
+    const response = await api.get("/projects/my-team");
+
+    return response.data;
+};
